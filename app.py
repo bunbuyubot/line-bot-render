@@ -98,7 +98,7 @@ def upload_to_drive(filepath, filename):
 
     file_metadata = {
     "name": filename,
-    "parents": ["1ABCdefGHIjkLmnOpQRsTuvWXyZ012345"]  #1TzWC2J5JBJXx4nr7Uu5nSHg-HUnQvh0v
+    "parents": ["1TzWC2J5JBJXx4nr7Uu5nSHg-HUnQvh0v"]  
 }
 
 
