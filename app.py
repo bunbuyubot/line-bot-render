@@ -32,7 +32,7 @@ def webhook():
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
-print("🟢 handle_message() が呼ばれました")
+    print("🟢 handle_message() が呼ばれました")
     user_message = event.message.text
     user_id = event.source.user_id
 
