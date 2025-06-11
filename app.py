@@ -44,7 +44,7 @@ def handle_message(event):
 
     # Wordファイル保存
     save_to_word(user_message, user_id)
-    upload_to_drive(filepath, filename)
+    
 
 
 def save_to_word(text, user_id):
@@ -60,7 +60,8 @@ def save_to_word(text, user_id):
     filepath = os.path.join(SAVE_DIR, filename)
 
     print(f"📄 Wordファイル作成準備中: {filepath}")
-
+    upload_to_drive(filepath, filename)
+    
     try:
         doc = Document()
         doc.add_heading("LINE報告書", level=1)
