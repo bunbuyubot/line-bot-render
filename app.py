@@ -10,7 +10,7 @@ app = Flask(__name__)
 
 # 🔽 あなたのLINEチャネル情報を貼ってください
 LINE_CHANNEL_ACCESS_TOKEN='JLHxkWqodOnZUYjdekyGfVPGecu8/QbV3v9b3/9v3QUVBt1e2VVa9iYEtjlZfyryyZ94VzBEFVjDVHhiifQybVHEgd/9G1YTyXNtpRYKYlS84prGTlQ9OEtjbYRQ0i+1Ew/LYVBKL/gOO8o28qXUNgdB04t89/1O/w1cDnyilFU='
-LINE_CHANNEL_SECRET ='c30c9f9ecce29c412c0f912f56609edd'
+LINE_CHANNEL_SECRET ='f7d5574370a219ba443cd857e6592383'
 
 line_bot_api = LineBotApi(LINE_CHANNEL_ACCESS_TOKEN)
 handler = WebhookHandler(LINE_CHANNEL_SECRET)
