@@ -46,18 +46,31 @@ def handle_message(event):
     save_to_word(user_message, user_id)
 
 def save_to_word(text, user_id):
-    print("🔵 save_to_word() が呼ばれました")
+    from datetime import datetime
+    from docx import Document
+    import os
+
     now = datetime.now()
+    SAVE_DIR = '/tmp/reports'
+    os.makedirs(SAVE_DIR, exist_ok=True)
+
     filename = f"report_{now.strftime('%Y%m%d_%H%M%S')}.docx"
     filepath = os.path.join(SAVE_DIR, filename)
 
-    doc = Document()
-    doc.add_heading("LINE報告書", level=1)
-    doc.add_paragraph(f"日時: {now.strftime('%Y-%m-%d %H:%M')}")
-    doc.add_paragraph(f"ユーザーID: {user_id}")
-    doc.add_paragraph("内容:")
-    doc.add_paragraph(text)
-    doc.save(filepath)
+    print(f"📄 Wordファイル作成準備中: {filepath}")
+
+    try:
+        doc = Document()
+        doc.add_heading("LINE報告書", level=1)
+        doc.add_paragraph(f"日時: {now.strftime('%Y-%m-%d %H:%M')}")
+        doc.add_paragraph(f"ユーザーID: {user_id}")
+        doc.add_paragraph("内容:")
+        doc.add_paragraph(text)
+        doc.save(filepath)
+        print(f"✅ Wordファイルを保存しました: {filepath}")
+    except Exception as e:
+        print(f"❌ Word保存中にエラー発生: {e}")
+
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
