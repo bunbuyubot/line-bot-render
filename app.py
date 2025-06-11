@@ -80,13 +80,14 @@ if __name__ == "__main__":
     app.run(host="0.0.0.0", port=port)
 
 def upload_to_drive(filepath, filename):
+    print(f"🚀 Google Drive へアップロード開始: {filepath}")  # ←追加①
+
     import json
     import os
     from google.oauth2 import service_account
     from googleapiclient.discovery import build
     from googleapiclient.http import MediaFileUpload
 
-    # Render の環境変数から credentials を取得
     credentials_info = json.loads(os.environ.get("GOOGLE_CREDENTIALS_JSON"))
     credentials = service_account.Credentials.from_service_account_info(
         credentials_info,
@@ -99,7 +100,10 @@ def upload_to_drive(filepath, filename):
     media = MediaFileUpload(filepath, mimetype="application/vnd.openxmlformats-officedocument.wordprocessingml.document")
 
     uploaded = service.files().create(body=file_metadata, media_body=media, fields="id").execute()
-    print(f"✅ Google Drive にアップロードされました（ID: {uploaded.get('id')}）")
+    print(f"✅ Google Drive にアップロードされました (ID: {uploaded.get('id')})")
+
+    print(f"✅ アップロード完了: https://drive.google.com/drive/u/0/my-drive")  # ←追加②
+
 
 
 
