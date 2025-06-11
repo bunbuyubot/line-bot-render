@@ -46,7 +46,7 @@ def handle_message(event):
     save_to_word(user_message, user_id)
 
 def save_to_word(text, user_id):
-print("🔵 save_to_word() が呼ばれました")
+    print("🔵 save_to_word() が呼ばれました")
     now = datetime.now()
     filename = f"report_{now.strftime('%Y%m%d_%H%M%S')}.docx"
     filepath = os.path.join(SAVE_DIR, filename)
