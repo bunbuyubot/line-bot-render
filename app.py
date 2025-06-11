@@ -44,6 +44,8 @@ def handle_message(event):
 
     # Wordファイル保存
     save_to_word(user_message, user_id)
+    upload_to_drive(filepath, filename)
+
 
 def save_to_word(text, user_id):
     from datetime import datetime
