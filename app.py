@@ -96,8 +96,11 @@ def upload_to_drive(filepath, filename):
 
     service = build("drive", "v3", credentials=credentials)
 
-    file_metadata = {"name": filename}
-    media = MediaFileUpload(filepath, mimetype="application/vnd.openxmlformats-officedocument.wordprocessingml.document")
+    file_metadata = {
+    "name": filename,
+    "parents": ["1ABCdefGHIjkLmnOpQRsTuvWXyZ012345"]  # ← ここにフォルダID
+}
+
 
     uploaded = service.files().create(body=file_metadata, media_body=media, fields="id").execute()
     print(f"✅ Google Drive にアップロードされました (ID: {uploaded.get('id')})")
