@@ -59,7 +59,7 @@ def save_to_word(text, user_id):
     filename = f"report_{now.strftime('%Y%m%d_%H%M%S')}.docx"
     filepath = os.path.join(SAVE_DIR, filename)
 
-   print(f"📄 Wordファイル作成準備中: {filepath}")
+    print(f"📄 Wordファイル作成準備中: {filepath}")
 
 try:
     doc = Document()
