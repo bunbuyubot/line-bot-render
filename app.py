@@ -44,30 +44,28 @@ def handle_message(event):
     save_to_word(data_dict)  # ← dictをテンプレートに差し込んで保存
 
     
-from docxtpl import DocxTemplate  # ← これも冒頭に追加
+from docxtpl import DocxTemplate
+from datetime import datetime
+import os
 
-def save_to_word(data):
-    from datetime import datetime
-    import os
-
+def save_to_word(data_dict):
     now = datetime.now()
-    SAVE_DIR = "/tmp/reports"
+    SAVE_DIR = "/tmp/reports"  # Render用、ローカルなら "./reports" にしてもOK
     os.makedirs(SAVE_DIR, exist_ok=True)
 
+    template_path = "来店報告書テンプレ.docx"  # テンプレートのファイル名
     filename = f"report_{now.strftime('%Y%m%d_%H%M%S')}.docx"
-    filepath = os.path.join(SAVE_DIR, filename)
-
-    print(f"📄 テンプレートから報告書作成: {filepath}")
+    output_path = os.path.join(SAVE_DIR, filename)
 
     try:
-        tpl = DocxTemplate("来店報告書テンプレ.docx")
-        tpl.render(data)  # ← data_dict を差し込む
-        tpl.save(filepath)
-        print(f"✅ Wordファイルを保存しました: {filepath}")
-
-        upload_to_drive(filepath, filename)
+        print(f"📄 テンプレートを読み込み中: {template_path}")
+        doc = DocxTemplate(template_path)
+        doc.render(data_dict)
+        doc.save(output_path)
+        print(f"✅ Wordファイルを保存しました: {output_path}")
     except Exception as e:
-        print(f"❌ Word保存中にエラー発生: {e}")
+        print(f"❌ Wordファイル作成中にエラー発生: {e}")
+
 
 
 
