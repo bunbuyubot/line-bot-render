@@ -59,8 +59,22 @@ def save_to_word(text, user_id):
     filename = f"report_{now.strftime('%Y%m%d_%H%M%S')}.docx"
     filepath = os.path.join(SAVE_DIR, filename)
 
-    print(f"📄 Wordファイル作成準備中: {filepath}")
-    upload_to_drive(filepath, filename)
+   print(f"📄 Wordファイル作成準備中: {filepath}")
+
+try:
+    doc = Document()
+    doc.add_heading("LINE報告書", level=1)
+    doc.add_paragraph(f"日時: {now.strftime('%Y-%m-%d %H:%M')}")
+    doc.add_paragraph(f"ユーザーID: {user_id}")
+    doc.add_paragraph("内容:")
+    doc.add_paragraph(text)
+    doc.save(filepath)
+    print(f"✅ Wordファイルを保存しました: {filepath}")
+    
+    upload_to_drive(filepath, filename)  # ← 保存が終わった後に呼ぶ！
+except Exception as e:
+    print(f"❌ Word保存中にエラー発生: {e}")
+
     
     try:
         doc = Document()
