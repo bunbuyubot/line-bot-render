@@ -30,65 +30,42 @@ def webhook():
 
     return 'OK'
 
+from data_dict import data_dict  # Canvasにあるdictを使う場合に必要
+
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
     print("🟢 handle_message() が呼ばれました")
-    user_message = event.message.text
-    user_id = event.source.user_id
 
-    # Botから返信
     line_bot_api.reply_message(
         event.reply_token,
-        TextSendMessage(text="メッセージを報告書に保存しました！")
+        TextSendMessage(text="テンプレート報告書を作成中です...")
     )
 
-    # Wordファイル保存
-    save_to_word(user_message, user_id)
+    save_to_word(data_dict)  # ← dictをテンプレートに差し込んで保存
+
     
+from docxtpl import DocxTemplate  # ← これも冒頭に追加
 
-
-def save_to_word(text, user_id):
+def save_to_word(data):
     from datetime import datetime
-    from docx import Document
-import os
-from datetime import datetime
+    import os
 
-def save_to_word(data_dict):
-    from docx.shared import Pt
     now = datetime.now()
-    SAVE_DIR = '/tmp/reports'
+    SAVE_DIR = "/tmp/reports"
     os.makedirs(SAVE_DIR, exist_ok=True)
 
     filename = f"report_{now.strftime('%Y%m%d_%H%M%S')}.docx"
     filepath = os.path.join(SAVE_DIR, filename)
 
-    print(f"📄 Wordファイル作成準備中: {filepath}")
+    print(f"📄 テンプレートから報告書作成: {filepath}")
 
     try:
-        # テンプレートを読み込む
-        template_path = "来店報告書テンプレ.docx"
-        doc = Document(template_path)
-
-        # プレースホルダを置換
-        for paragraph in doc.paragraphs:
-            for key, value in data_dict.items():
-                if f"{{{{{key}}}}}" in paragraph.text:
-                    paragraph.text = paragraph.text.replace(f"{{{{{key}}}}}", str(value))
-
-        # 表の中も置換する（必要なら）
-        for table in doc.tables:
-            for row in table.rows:
-                for cell in row.cells:
-                    for key, value in data_dict.items():
-                        if f"{{{{{key}}}}}" in cell.text:
-                            cell.text = cell.text.replace(f"{{{{{key}}}}}", str(value))
-
-        doc.save(filepath)
+        tpl = DocxTemplate("来店報告書テンプレ.docx")
+        tpl.render(data)  # ← data_dict を差し込む
+        tpl.save(filepath)
         print(f"✅ Wordファイルを保存しました: {filepath}")
 
-        # Google Drive へアップロード（既にあるなら）
         upload_to_drive(filepath, filename)
-
     except Exception as e:
         print(f"❌ Word保存中にエラー発生: {e}")
 
