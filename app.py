@@ -115,6 +115,10 @@ def upload_to_drive(filepath, filename):
     "parents": ["1TzWC2J5JBJXx4nr7Uu5nSHg-HUnQvh0v"]  
 }
 
+    media = MediaFileUpload(
+    filepath,
+    mimetype="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+)
 
     uploaded = service.files().create(body=file_metadata, media_body=media, fields="id").execute()
     print(f"✅ Google Drive にアップロードされました (ID: {uploaded.get('id')})")
