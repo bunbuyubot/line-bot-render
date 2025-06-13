@@ -50,8 +50,11 @@ def handle_message(event):
 def save_to_word(text, user_id):
     from datetime import datetime
     from docx import Document
-    import os
+import os
+from datetime import datetime
 
+def save_to_word(data_dict):
+    from docx.shared import Pt
     now = datetime.now()
     SAVE_DIR = '/tmp/reports'
     os.makedirs(SAVE_DIR, exist_ok=True)
@@ -62,20 +65,33 @@ def save_to_word(text, user_id):
     print(f"📄 Wordファイル作成準備中: {filepath}")
 
     try:
-        doc = Document()
-        doc.add_heading("LINE報告書", level=1)
-        doc.add_paragraph(f"日時: {now.strftime('%Y-%m-%d %H:%M')}")
-        doc.add_paragraph(f"ユーザーID: {user_id}")
-        doc.add_paragraph("内容:")
-        doc.add_paragraph(text)
+        # テンプレートを読み込む
+        template_path = "来店報告書テンプレ.docx"
+        doc = Document(template_path)
+
+        # プレースホルダを置換
+        for paragraph in doc.paragraphs:
+            for key, value in data_dict.items():
+                if f"{{{{{key}}}}}" in paragraph.text:
+                    paragraph.text = paragraph.text.replace(f"{{{{{key}}}}}", str(value))
+
+        # 表の中も置換する（必要なら）
+        for table in doc.tables:
+            for row in table.rows:
+                for cell in row.cells:
+                    for key, value in data_dict.items():
+                        if f"{{{{{key}}}}}" in cell.text:
+                            cell.text = cell.text.replace(f"{{{{{key}}}}}", str(value))
+
         doc.save(filepath)
         print(f"✅ Wordファイルを保存しました: {filepath}")
 
-        # 🔽 アップロード関数をここで呼び出す
+        # Google Drive へアップロード（既にあるなら）
         upload_to_drive(filepath, filename)
 
     except Exception as e:
         print(f"❌ Word保存中にエラー発生: {e}")
+
 
 
     
