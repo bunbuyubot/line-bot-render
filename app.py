@@ -109,7 +109,7 @@ def save_to_word(data_dict):
         jinja_env.filters['nl2br'] = lambda value: value.replace('\n', '<w:br/>')
 
         # 🔽 Jinja2環境を指定して render
-        doc.render(data_dict, jinja_env)
+        doc.render(data_dict, env=jinja_env)
 
         doc.save(output_path)
         print(f"✅ Wordファイル保存完了: {output_path}")
@@ -118,36 +118,6 @@ def save_to_word(data_dict):
     except Exception as e:
         print(f"❌ Word作成中にエラー: {e}")
 
-
-
-# ☁️ Google Drive にアップロード
-def upload_to_drive(filepath, filename):
-    print(f"🚀 Google Driveへアップロード開始: {filepath}")
-    credentials_info = json.loads(os.environ.get("GOOGLE_CREDENTIALS_JSON"))
-
-    credentials = service_account.Credentials.from_service_account_info(
-        credentials_info,
-        scopes=["https://www.googleapis.com/auth/drive.file"]
-    )
-
-    service = build("drive", "v3", credentials=credentials)
-    file_metadata = {
-        "name": filename,
-        "parents": ["1TzWC2J5JBJXx4nr7Uu5nSHg-HUnQvh0v"]
-    }
-
-    media = MediaFileUpload(
-        filepath,
-        mimetype="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-    )
-
-    uploaded = service.files().create(
-        body=file_metadata,
-        media_body=media,
-        fields="id"
-    ).execute()
-
-    print(f"✅ Driveアップロード完了 (ID: {uploaded.get('id')})")
 
 # ▶️ アプリ起動
 if __name__ == "__main__":
