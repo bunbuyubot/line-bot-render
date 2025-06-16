@@ -98,18 +98,20 @@ def save_to_word(data_dict):
     now = datetime.now()
     filename = f"report_{now.strftime('%Y%m%d_%H%M%S')}.docx"
     output_path = os.path.join(SAVE_DIR, filename)
-    template_path = "template.docx"  # ファイル名確認済
+    template_path = "template.docx"
 
     try:
         print(f"📄 テンプレート読み込み: {template_path}")
-        doc = DocxTemplate(template_path)
 
-        # 🔽 Jinja2 環境と nl2br フィルター追加
+        # ✅ Jinja2環境を作成し、フィルターを追加
         jinja_env = Environment()
         jinja_env.filters['nl2br'] = lambda value: value.replace('\n', '<w:br/>')
 
-        # 🔽 Jinja2環境を指定して render
-        doc.render(data_dict, env=jinja_env)
+        # ✅ 環境付きでDocxTemplateを初期化（ここがポイント！）
+        doc = DocxTemplate(template_path, jinja_env=jinja_env)
+
+        # 🔽 通常通りレンダー
+        doc.render(data_dict)
 
         doc.save(output_path)
         print(f"✅ Wordファイル保存完了: {output_path}")
@@ -117,6 +119,7 @@ def save_to_word(data_dict):
 
     except Exception as e:
         print(f"❌ Word作成中にエラー: {e}")
+
 
 
 # ▶️ アプリ起動
