@@ -48,46 +48,30 @@ def parse_message_to_dict(message_text):
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
     print("🟢 handle_message() が呼ばれました")
+    text = event.message.text
 
-    text = event.message.text  # ユーザーの送信テキストを取得
-    data_dict = {  # 初期テンプレートキーをすべて用意しておく
-        "日時": "",
-        "店舗名": "",
-        "来店メンバー": "",
-        "来店リスナー": "",
-        "稼働": "",
-        "推定フェーズ": "",
-        "開催イベント": "",
-        "良い兆候": "",
-        "課題": "",
-        "提案": "",
-        "店舗様のお言葉": "",
-        "稼働率": "",
-        "総視聴数": "",
-        "最大同接数": "",
-        "UU数": "",
-        "コミュニティいいね数": "",
-        "ポスト合計数": "",
-        "インプレッション数": "",
-        "エンゲージメント数": ""
-    }
+    # もとのテンプレート用のdata_dictを複製
+    from copy import deepcopy
+    from data_dict import data_dict as base_dict
+    updated_dict = deepcopy(base_dict)
 
-    # ユーザーのメッセージを改行ごとに分割し、"キー: 値" 形式でパース
+    # メッセージをパース（「キー: 値」の形式で1行ずつ）
     for line in text.splitlines():
         if ':' in line:
             key, value = line.split(':', 1)
             key = key.strip()
             value = value.strip()
-            if key in data_dict:
-                data_dict[key] = value
+            if key in updated_dict:
+                updated_dict[key] = value
 
-    # 応答
+    # 応答（非同期処理中の案内）
     line_bot_api.reply_message(
         event.reply_token,
-        TextSendMessage(text="テンプレート報告書を作成中です...")
+        TextSendMessage(text="テンプレート報告書を作成中です…")
     )
 
-    save_to_word(data_dict)  # Word保存へ
+    # 置き換えたdictを元に保存
+    save_to_word(updated_dict)
 
 
 
