@@ -102,23 +102,20 @@ def save_to_word(data_dict):
 
     try:
         print(f"📄 テンプレート読み込み: {template_path}")
+        doc = DocxTemplate(template_path)
 
-        # ✅ Jinja2環境を作成し、フィルターを追加
-        jinja_env = Environment()
-        jinja_env.filters['nl2br'] = lambda value: value.replace('\n', '<w:br/>')
+        # 🔽 フィルターを直接 jinja_env に追加（docxtpl の古いバージョン対応）
+        doc.jinja_env.filters['nl2br'] = lambda value: value.replace('\n', '<w:br/>')
 
-        # ✅ 環境付きでDocxTemplateを初期化（ここがポイント！）
-        doc = DocxTemplate(template_path, jinja_env=jinja_env)
-
-        # 🔽 通常通りレンダー
         doc.render(data_dict)
-
         doc.save(output_path)
+
         print(f"✅ Wordファイル保存完了: {output_path}")
         upload_to_drive(output_path, filename)
 
     except Exception as e:
         print(f"❌ Word作成中にエラー: {e}")
+
 
 
 
