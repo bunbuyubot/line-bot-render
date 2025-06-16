@@ -47,18 +47,19 @@ def parse_message_to_dict(message_text):
 # 📩 LINEメッセージ処理
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
-    print("🟢 handle_message() が呼ばれました")
-    message_text = event.message.text
-    parsed_dict = parse_message_to_dict(message_text)
+    text = event.message.text
 
-    print(f"📦 受信したデータ: {parsed_dict}")
+    # 改行に対応した複数行メッセージを「キー: 値」形式でパース
+    for line in text.splitlines():
+        if ':' in line:
+            key, value = line.split(':', 1)
+            key = key.strip()
+            value = value.strip()
+            if key in data_dict:
+                data_dict[key] = value
 
-    line_bot_api.reply_message(
-        event.reply_token,
-        TextSendMessage(text="報告書を作成してGoogle Driveに保存します！")
-    )
+    save_to_word(data_dict)
 
-    save_to_word(parsed_dict)
 
 # 📄 Wordファイル作成
 def save_to_word(data_dict):
