@@ -3,6 +3,7 @@ from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
 from linebot.models import MessageEvent, TextMessage, TextSendMessage
 from docxtpl import DocxTemplate
+from docxtpl import jinja2
 from datetime import datetime
 import os
 import json
@@ -19,11 +20,9 @@ LINE_CHANNEL_SECRET = 'c30c9f9ecce29c412c0f912f56609edd'
 line_bot_api = LineBotApi(LINE_CHANNEL_ACCESS_TOKEN)
 handler = WebhookHandler(LINE_CHANNEL_SECRET)
 
-# 📁 保存先ディレクトリ（Render用）
 SAVE_DIR = "/tmp/reports"
 os.makedirs(SAVE_DIR, exist_ok=True)
 
-# 📌 webhookルート
 @app.route("/webhook", methods=['POST'])
 def webhook():
     signature = request.headers['X-Line-Signature']
@@ -34,28 +33,16 @@ def webhook():
         abort(400)
     return 'OK'
 
-# 🧠 メッセージを辞書に変換する
-def parse_message_to_dict(message_text):
-    lines = message_text.split('\n')
-    data = {}
-    for line in lines:
-        if ':' in line:
-            key, value = line.split(':', 1)
-            data[key.strip()] = value.strip()
-    return data
-
 # 📩 LINEメッセージ処理
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
     print("🟢 handle_message() が呼ばれました")
     text = event.message.text
 
-    # 元の data_dict をコピーして使う
     from data_dict import data_dict as base_dict
     from copy import deepcopy
     updated_dict = deepcopy(base_dict)
 
-    # LINEで送られたテキストを「キー: 値」形式でパース
     for line in text.splitlines():
         if ':' in line:
             key, value = line.split(':', 1)
@@ -66,17 +53,12 @@ def handle_message(event):
 
     print(f"📦 更新された dict: {updated_dict}")
 
-    # 応答
     line_bot_api.reply_message(
         event.reply_token,
         TextSendMessage(text="テンプレート報告書を作成中です...")
     )
 
-    # 上書き済みの dict を使って Word を作成
     save_to_word(updated_dict)
-
-
-
 
 # 📄 Wordファイル作成
 def save_to_word(data_dict):
@@ -88,6 +70,11 @@ def save_to_word(data_dict):
     try:
         print(f"📄 テンプレート読み込み: {template_path}")
         doc = DocxTemplate(template_path)
+
+        # ✅ 改行を反映するためのフィルタ追加
+        env = doc.environment
+        env.filters['nl2br'] = jinja2.filters.do_nl2br
+
         doc.render(data_dict)
         doc.save(output_path)
         print(f"✅ Wordファイル保存完了: {output_path}")
@@ -108,7 +95,7 @@ def upload_to_drive(filepath, filename):
     service = build("drive", "v3", credentials=credentials)
     file_metadata = {
         "name": filename,
-        "parents": ["1TzWC2J5JBJXx4nr7Uu5nSHg-HUnQvh0v"]  # ← DriveのフォルダIDに置き換えてください
+        "parents": ["1TzWC2J5JBJXx4nr7Uu5nSHg-HUnQvh0v"]
     }
 
     media = MediaFileUpload(
@@ -124,7 +111,7 @@ def upload_to_drive(filepath, filename):
 
     print(f"✅ Driveアップロード完了 (ID: {uploaded.get('id')})")
 
-# ▶️ アプリ起動（Render用）
+# ▶️ アプリ起動
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
