@@ -71,7 +71,8 @@ def save_to_word(data_dict):
         print(f"📄 テンプレート読み込み: {template_path}")
         doc = DocxTemplate(template_path)
 
-        # ✅ 改行を反映するためのフィルタ追加
+        # 🔽 ここに追加
+        import jinja2
         env = doc.environment
         env.filters['nl2br'] = jinja2.filters.do_nl2br
 
@@ -81,6 +82,7 @@ def save_to_word(data_dict):
         upload_to_drive(output_path, filename)
     except Exception as e:
         print(f"❌ Word作成中にエラー: {e}")
+
 
 # ☁️ Google Drive にアップロード
 def upload_to_drive(filepath, filename):
