@@ -13,8 +13,8 @@ from googleapiclient.http import MediaFileUpload
 app = Flask(__name__)
 
 # 🔐 LINEチャネル情報
-LINE_CHANNEL_ACCESS_TOKEN = 'あなたのアクセストークン'
-LINE_CHANNEL_SECRET = 'あなたのシークレット'
+LINE_CHANNEL_ACCESS_TOKEN = 'JLHxkWqodOnZUYjdekyGfVPGecu8/QbV3v9b3/9v3QUVBt1e2VVa9iYEtjlZfyryyZ94VzBEFVjDVHhiifQybVHEgd/9G1YTyXNtpRYKYlS84prGTlQ9OEtjbYRQ0i+1Ew/LYVBKL/gOO8o28qXUNgdB04t89/1O/w1cDnyilFU='
+LINE_CHANNEL_SECRET = 'c30c9f9ecce29c412c0f912f56609edd'
 
 line_bot_api = LineBotApi(LINE_CHANNEL_ACCESS_TOKEN)
 handler = WebhookHandler(LINE_CHANNEL_SECRET)
@@ -90,7 +90,7 @@ def upload_to_drive(filepath, filename):
     service = build("drive", "v3", credentials=credentials)
     file_metadata = {
         "name": filename,
-        "parents": ["あなたのフォルダID"]  # ← DriveのフォルダIDに置き換えてください
+        "parents": ["1TzWC2J5JBJXx4nr7Uu5nSHg-HUnQvh0v"]  # ← DriveのフォルダIDに置き換えてください
     }
 
     media = MediaFileUpload(
