@@ -60,6 +60,36 @@ def handle_message(event):
 
     save_to_word(updated_dict)
 
+# ☁️ Google Drive にアップロード
+def upload_to_drive(filepath, filename):
+    print(f"🚀 Google Driveへアップロード開始: {filepath}")
+    credentials_info = json.loads(os.environ.get("GOOGLE_CREDENTIALS_JSON"))
+
+    credentials = service_account.Credentials.from_service_account_info(
+        credentials_info,
+        scopes=["https://www.googleapis.com/auth/drive.file"]
+    )
+
+    service = build("drive", "v3", credentials=credentials)
+    file_metadata = {
+        "name": filename,
+        "parents": ["1TzWC2J5JBJXx4nr7Uu5nSHg-HUnQvh0v"]  # ← ご自身のDriveフォルダIDに書き換え
+    }
+
+    media = MediaFileUpload(
+        filepath,
+        mimetype="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    )
+
+    uploaded = service.files().create(
+        body=file_metadata,
+        media_body=media,
+        fields="id"
+    ).execute()
+
+    print(f"✅ Driveアップロード完了 (ID: {uploaded.get('id')})")
+
+
 # 📄 Wordファイル作成
 def save_to_word(data_dict):
     now = datetime.now()
