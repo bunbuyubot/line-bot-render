@@ -104,17 +104,22 @@ def save_to_word(data_dict):
         print(f"📄 テンプレート読み込み: {template_path}")
         doc = DocxTemplate(template_path)
 
-        # 🔽 フィルターを直接 jinja_env に追加（docxtpl の古いバージョン対応）
+        # 🔽 ここで読み込みチェックを追加！
+        if doc is None:
+            raise ValueError("テンプレートの読み込みに失敗しました。ファイル名またはパスを確認してください。")
+
+        # 🔽 Jinja2 フィルター追加
         doc.jinja_env.filters['nl2br'] = lambda value: value.replace('\n', '<w:br/>')
 
+        # 🔽 dict を使って Word に反映
         doc.render(data_dict)
         doc.save(output_path)
-
         print(f"✅ Wordファイル保存完了: {output_path}")
         upload_to_drive(output_path, filename)
 
     except Exception as e:
         print(f"❌ Word作成中にエラー: {e}")
+
 
 
 
