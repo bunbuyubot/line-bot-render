@@ -98,7 +98,7 @@ def save_to_word(data_dict):
     now = datetime.now()
     filename = f"report_{now.strftime('%Y%m%d_%H%M%S')}.docx"
     output_path = os.path.join(SAVE_DIR, filename)
-    template_path = "template.docx.docx"  # ファイル名確認済
+    template_path = "template.docx"  # ファイル名確認済
 
     try:
         print(f"📄 テンプレート読み込み: {template_path}")
