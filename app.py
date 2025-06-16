@@ -97,7 +97,7 @@ def save_to_word(data_dict):
     now = datetime.now()
     filename = f"report_{now.strftime('%Y%m%d_%H%M%S')}.docx"
     output_path = os.path.join(SAVE_DIR, filename)
-    template_path = os.path.join(os.path.dirname(__file__), "来店報告書テンプレ.docx")
+    template_path = os.path.join(os.path.dirname(__file__), "template.docx")
 
 
     try:
