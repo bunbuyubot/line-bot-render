@@ -3,7 +3,7 @@ from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
 from linebot.models import MessageEvent, TextMessage, TextSendMessage
 from docxtpl import DocxTemplate
-from docxtpl import jinja2
+import jinja2
 from datetime import datetime
 import os
 import json
