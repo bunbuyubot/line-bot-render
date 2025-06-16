@@ -92,25 +92,26 @@ def upload_to_drive(filepath, filename):
 
 # 📄 Wordファイル作成
 from jinja2 import Environment
+from docxtpl import DocxTemplate
 
 def save_to_word(data_dict):
     now = datetime.now()
     filename = f"report_{now.strftime('%Y%m%d_%H%M%S')}.docx"
     output_path = os.path.join(SAVE_DIR, filename)
-    template_path = os.path.join(os.path.dirname(__file__), "template.docx")
-
+    template_path = "template.docx.docx"  # ファイル名確認済
 
     try:
         print(f"📄 テンプレート読み込み: {template_path}")
-        
-        # docxtplとjinja2フィルターの組み合わせ
-        env = Environment()
-        env.filters['nl2br'] = lambda value: value.replace('\n', '<w:br/>')
-
         doc = DocxTemplate(template_path)
-        doc.render(data_dict, env)  # ← フィルターを含む環境を渡す
-        doc.save(output_path)
 
+        # 🔽 Jinja2 環境と nl2br フィルター追加
+        jinja_env = Environment()
+        jinja_env.filters['nl2br'] = lambda value: value.replace('\n', '<w:br/>')
+
+        # 🔽 Jinja2環境を指定して render
+        doc.render(data_dict, jinja_env)
+
+        doc.save(output_path)
         print(f"✅ Wordファイル保存完了: {output_path}")
         upload_to_drive(output_path, filename)
 
