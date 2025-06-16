@@ -64,26 +64,24 @@ def handle_message(event):
 def save_to_word(data_dict):
     now = datetime.now()
     filename = f"report_{now.strftime('%Y%m%d_%H%M%S')}.docx"
-    output_path = os.path.join(SAVE_DIR, filename)
-
-    print("📂 現在のディレクトリ:", os.getcwd())
-    print("📄 ファイル一覧:", os.listdir('.'))
-
-    template_path = "来店報告書テンプレ.docx"
+    output_path = os.path.join("/tmp/reports", filename)
+    template_path = "template.docx"  # ← ファイル名は英数字にして保存してください
 
     try:
         print(f"📄 テンプレート読み込み: {template_path}")
         doc = DocxTemplate(template_path)
 
-        # 🔽 ここに追加
-        import jinja2
-        env = doc.environment
-        env.filters['nl2br'] = jinja2.filters.do_nl2br
+        # ✅ 改行をWord内で反映させるフィルターを追加
+        env = Environment()
+        env.filters['nl2br'] = lambda value: value.replace('\n', '<w:br/>')
+        doc.render(data_dict, env)  # ← フィルター環境を反映
 
-        doc.render(data_dict)
         doc.save(output_path)
         print(f"✅ Wordファイル保存完了: {output_path}")
+
+        # Google Driveにアップロード（必要であれば）
         upload_to_drive(output_path, filename)
+
     except Exception as e:
         print(f"❌ Word作成中にエラー: {e}")
 
