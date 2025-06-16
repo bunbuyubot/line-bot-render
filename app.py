@@ -50,12 +50,12 @@ def handle_message(event):
     print("🟢 handle_message() が呼ばれました")
     text = event.message.text
 
-    # もとのテンプレート用のdata_dictを複製
-    from copy import deepcopy
+    # 元の data_dict をコピーして使う
     from data_dict import data_dict as base_dict
+    from copy import deepcopy
     updated_dict = deepcopy(base_dict)
 
-    # メッセージをパース（「キー: 値」の形式で1行ずつ）
+    # LINEで送られたテキストを「キー: 値」形式でパース
     for line in text.splitlines():
         if ':' in line:
             key, value = line.split(':', 1)
@@ -64,14 +64,17 @@ def handle_message(event):
             if key in updated_dict:
                 updated_dict[key] = value
 
-    # 応答（非同期処理中の案内）
+    print(f"📦 更新された dict: {updated_dict}")
+
+    # 応答
     line_bot_api.reply_message(
         event.reply_token,
-        TextSendMessage(text="テンプレート報告書を作成中です…")
+        TextSendMessage(text="テンプレート報告書を作成中です...")
     )
 
-    # 置き換えたdictを元に保存
+    # 上書き済みの dict を使って Word を作成
     save_to_word(updated_dict)
+
 
 
 
