@@ -39,7 +39,9 @@ def handle_message(event):
     print("🟢 handle_message() が呼ばれました")
     text = event.message.text
 
-    from data_dict import data_dict as base_dict
+    from data_dict import data_dict
+    print("✅ 店舗名：", data_dict["店舗名"])
+
     from copy import deepcopy
     updated_dict = deepcopy(base_dict)
 
