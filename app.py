@@ -2,7 +2,7 @@ from flask import Flask, request, abort
 from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
 from linebot.models import MessageEvent, TextMessage, TextSendMessage
-from docxtpl import DocxTemplate
+from docxtpl import DocxTemplate, RichText
 import jinja2
 from datetime import datetime
 import os
@@ -104,10 +104,10 @@ def save_to_word(data_dict):
         print(f"📄 テンプレート読み込み: {template_path}")
         doc = DocxTemplate(template_path)
 
-        # ✅ 改行を Word 改行タグに置き換える
+        # HTML互換改行タグへ変換
         for key in data_dict:
             if isinstance(data_dict[key], str):
-                data_dict[key] = data_dict[key].replace('\n', '<w:br/>')
+                data_dict[key] = data_dict[key].replace('\n', '<br/>')
 
         doc.render(data_dict)
         doc.save(output_path)
@@ -116,6 +116,7 @@ def save_to_word(data_dict):
 
     except Exception as e:
         print(f"❌ Word作成中にエラー: {e}")
+
 
 
 
