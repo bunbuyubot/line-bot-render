@@ -94,6 +94,8 @@ def upload_to_drive(filepath, filename):
 from jinja2 import Environment
 from docxtpl import DocxTemplate
 
+from docxtpl import RichText
+
 def convert_newlines(value):
     rt = RichText()
     for i, line in enumerate(value.split('\n')):
@@ -101,6 +103,12 @@ def convert_newlines(value):
             rt.add_break()
         rt.add(line)
     return rt
+
+# 例えばこう適用
+for field in ['提案', '課題', '良い兆候', '店舗様のお言葉']:
+    if field in data_dict:
+        data_dict[field] = convert_newlines(data_dict[field])
+
 
 def save_to_word(data_dict):
     now = datetime.now()
