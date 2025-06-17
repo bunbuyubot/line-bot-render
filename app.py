@@ -94,33 +94,38 @@ def upload_to_drive(filepath, filename):
 from jinja2 import Environment
 from docxtpl import DocxTemplate
 
+def convert_newlines(value):
+    rt = RichText()
+    for i, line in enumerate(value.split('\n')):
+        if i > 0:
+            rt.add_break()
+        rt.add(line)
+    return rt
+
 def save_to_word(data_dict):
     now = datetime.now()
     filename = f"report_{now.strftime('%Y%m%d_%H%M%S')}.docx"
-    output_path = os.path.join(SAVE_DIR, filename)
+    output_path = os.path.join("/tmp/reports", filename)
     template_path = "template.docx"
 
     try:
         print(f"📄 テンプレート読み込み: {template_path}")
         doc = DocxTemplate(template_path)
 
-        # HTML互換改行タグへ変換
-        for key in data_dict:
-            if isinstance(data_dict[key], str):
-                data_dict[key] = data_dict[key].replace('\n', '<br/>')
+        # 🔄 改行対応が必要な項目を RichText に変換
+        fields_with_newlines = ['良い兆候', '課題', '提案', '店舗様のお言葉']
+        for field in fields_with_newlines:
+            if field in data_dict and isinstance(data_dict[field], str):
+                data_dict[field] = convert_newlines(data_dict[field])
 
         doc.render(data_dict)
         doc.save(output_path)
         print(f"✅ Wordファイル保存完了: {output_path}")
+
         upload_to_drive(output_path, filename)
 
     except Exception as e:
         print(f"❌ Word作成中にエラー: {e}")
-
-
-
-
-
 
 
 
