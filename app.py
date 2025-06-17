@@ -104,12 +104,11 @@ def save_to_word(data_dict):
         print(f"📄 テンプレート読み込み: {template_path}")
         doc = DocxTemplate(template_path)
 
-        # ✅ jinja_env の設定
-        jinja_env = jinja2.Environment()
-        jinja_env.filters['nl2br'] = lambda value: value.replace('\n', '<w:br/>')
-        doc.set_jinja_env(jinja_env)
+        # ✅ 改行を Word 改行タグに置き換える
+        for key in data_dict:
+            if isinstance(data_dict[key], str):
+                data_dict[key] = data_dict[key].replace('\n', '<w:br/>')
 
-        # ✅ 通常通り render 実行
         doc.render(data_dict)
         doc.save(output_path)
         print(f"✅ Wordファイル保存完了: {output_path}")
@@ -117,6 +116,7 @@ def save_to_word(data_dict):
 
     except Exception as e:
         print(f"❌ Word作成中にエラー: {e}")
+
 
 
 
