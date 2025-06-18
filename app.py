@@ -1,21 +1,23 @@
+
 from flask import Flask, request, abort
 from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
 from linebot.models import MessageEvent, TextMessage, TextSendMessage
 from docxtpl import DocxTemplate, RichText
-import jinja2
 from datetime import datetime
 import os
 import json
+from copy import deepcopy
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
+from data_dict import data_dict
+
 
 app = Flask(__name__)
 
-# 🔐 LINEチャネル情報
-LINE_CHANNEL_ACCESS_TOKEN = 'JLHxkWqodOnZUYjdekyGfVPGecu8/QbV3v9b3/9v3QUVBt1e2VVa9iYEtjlZfyryyZ94VzBEFVjDVHhiifQybVHEgd/9G1YTyXNtpRYKYlS84prGTlQ9OEtjbYRQ0i+1Ew/LYVBKL/gOO8o28qXUNgdB04t89/1O/w1cDnyilFU='
-LINE_CHANNEL_SECRET = 'c30c9f9ecce29c412c0f912f56609edd'
+LINE_CHANNEL_ACCESS_TOKEN = 'YOUR_ACCESS_TOKEN'
+LINE_CHANNEL_SECRET = 'YOUR_CHANNEL_SECRET'
 
 line_bot_api = LineBotApi(LINE_CHANNEL_ACCESS_TOKEN)
 handler = WebhookHandler(LINE_CHANNEL_SECRET)
@@ -33,17 +35,12 @@ def webhook():
         abort(400)
     return 'OK'
 
-# 📩 LINEメッセージ処理
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
     print("🟢 handle_message() が呼ばれました")
     text = event.message.text
 
-    from data_dict import data_dict
-    print("✅ 店舗名：", data_dict["店舗名"])
-
-    from copy import deepcopy
-    updated_dict = deepcopy(base_dict)
+    updated_dict = deepcopy(data_dict)
 
     for line in text.splitlines():
         if ':' in line:
@@ -62,7 +59,6 @@ def handle_message(event):
 
     save_to_word(updated_dict)
 
-# ☁️ Google Drive にアップロード
 def upload_to_drive(filepath, filename):
     print(f"🚀 Google Driveへアップロード開始: {filepath}")
     credentials_info = json.loads(os.environ.get("GOOGLE_CREDENTIALS_JSON"))
@@ -75,7 +71,7 @@ def upload_to_drive(filepath, filename):
     service = build("drive", "v3", credentials=credentials)
     file_metadata = {
         "name": filename,
-        "parents": ["1TzWC2J5JBJXx4nr7Uu5nSHg-HUnQvh0v"]  # ← ご自身のDriveフォルダIDに書き換え
+        "parents": ["YOUR_FOLDER_ID"]
     }
 
     media = MediaFileUpload(
@@ -91,13 +87,6 @@ def upload_to_drive(filepath, filename):
 
     print(f"✅ Driveアップロード完了 (ID: {uploaded.get('id')})")
 
-
-# 📄 Wordファイル作成
-from jinja2 import Environment
-from docxtpl import DocxTemplate
-
-from docxtpl import RichText
-
 def convert_newlines(value):
     rt = RichText()
     for i, line in enumerate(value.split('\n')):
@@ -106,24 +95,17 @@ def convert_newlines(value):
         rt.add(line)
     return rt
 
-# 例えばこう適用
-for field in ['提案', '課題', '良い兆候', '店舗様のお言葉']:
-    if field in data_dict:
-        data_dict[field] = convert_newlines(data_dict[field])
-
-
 def save_to_word(data_dict):
     now = datetime.now()
     filename = f"report_{now.strftime('%Y%m%d_%H%M%S')}.docx"
-    output_path = os.path.join("/tmp/reports", filename)
+    output_path = os.path.join(SAVE_DIR, filename)
     template_path = "template.docx"
 
     try:
         print(f"📄 テンプレート読み込み: {template_path}")
         doc = DocxTemplate(template_path)
 
-        # 🔄 改行対応が必要な項目を RichText に変換
-        fields_with_newlines = ['良い兆候', '課題', '提案', '店舗様のお言葉']
+        fields_with_newlines = ['良い兆候', '課題', '提案', '店舗様のお言葉','稼働率']
         for field in fields_with_newlines:
             if field in data_dict and isinstance(data_dict[field], str):
                 data_dict[field] = convert_newlines(data_dict[field])
@@ -137,9 +119,6 @@ def save_to_word(data_dict):
     except Exception as e:
         print(f"❌ Word作成中にエラー: {e}")
 
-
-
-# ▶️ アプリ起動
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
