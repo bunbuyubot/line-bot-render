@@ -42,6 +42,8 @@ def webhook():
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
     print("🟢 handle_message() が呼ばれました")
+    print("🧪 TOKEN:", LINE_CHANNEL_ACCESS_TOKEN[:10] if LINE_CHANNEL_ACCESS_TOKEN else "None")
+    print("🧪 SECRET:", LINE_CHANNEL_SECRET[:10] if LINE_CHANNEL_SECRET else "None")
     text = event.message.text
 
     # 🔽 ここに追記！
@@ -131,6 +133,10 @@ def save_to_word(data_dict):
 
     except Exception as e:
         print(f"❌ Word作成中にエラー: {e}")
+
+        print("🧪 TOKEN:", LINE_CHANNEL_ACCESS_TOKEN[:10] if LINE_CHANNEL_ACCESS_TOKEN else "None")
+        print("🧪 SECRET:", LINE_CHANNEL_SECRET[:10] if LINE_CHANNEL_SECRET else "None")
+
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
