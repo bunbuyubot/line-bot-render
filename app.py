@@ -16,8 +16,12 @@ from data_dict import data_dict
 
 app = Flask(__name__)
 
-LINE_CHANNEL_ACCESS_TOKEN =os.environ.get('GUCpCaA9bPQsVbxSkPSjyPc0DxH7ox+BaA4fUojdP06apBIAf5O2mwtVATINabH8kozsCDU2Zx0lLmWwEv0+k40F6f8MOtINrgsGRt0sok5kITNTe3C9BGFzUIQ7U+H4ldaPZt0jAuNLuYASzgdfQgdB04t89/1O/w1cDnyilFU=')
-LINE_CHANNEL_SECRET =os.environ.get('f7d5574370a219ba443cd857e6592383')
+LINE_CHANNEL_ACCESS_TOKEN = os.environ.get("LINE_CHANNEL_ACCESS_TOKEN")
+LINE_CHANNEL_SECRET = os.environ.get("LINE_CHANNEL_SECRET")
+
+# ❗チェック：もし読み込めてなかったら例外を出す
+if not LINE_CHANNEL_ACCESS_TOKEN or not LINE_CHANNEL_SECRET:
+    raise ValueError("LINEのトークンまたはシークレットが設定されていません")
 
 line_bot_api = LineBotApi(LINE_CHANNEL_ACCESS_TOKEN)
 handler = WebhookHandler(LINE_CHANNEL_SECRET)
