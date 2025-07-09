@@ -44,6 +44,10 @@ def handle_message(event):
     print("🟢 handle_message() が呼ばれました")
     text = event.message.text
 
+    # 🔽 ここに追記！
+    print("📥 LINEメッセージ内容:", text)
+    print("📤 返信トークン:", event.reply_token)
+
     updated_dict = deepcopy(data_dict)
 
     for line in text.splitlines():
@@ -103,7 +107,12 @@ def save_to_word(data_dict):
     now = datetime.now()
     filename = f"report_{now.strftime('%Y%m%d_%H%M%S')}.docx"
     output_path = os.path.join(SAVE_DIR, filename)
+    
+    # 🔽 ここに追記！
+    print("🧪 Wordファイル保存先:", output_path)
+
     template_path = "template.docx"
+    ...
 
     try:
         print(f"📄 テンプレート読み込み: {template_path}")
