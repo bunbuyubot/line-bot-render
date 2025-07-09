@@ -87,7 +87,6 @@ def upload_to_drive(filepath, filename):
     service = build("drive", "v3", credentials=credentials)
     file_metadata = {
         "name": filename,
-        "parents": ["1TzWC2J5JBJXx4nr7Uu5nSHg-HUnQvh0v"]
     }
 
     media = MediaFileUpload(
