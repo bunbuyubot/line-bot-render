@@ -33,10 +33,16 @@ os.makedirs(SAVE_DIR, exist_ok=True)
 def webhook():
     signature = request.headers['X-Line-Signature']
     body = request.get_data(as_text=True)
+    print("📩 受信Webhook body:", body)
+    print("📩 受信Webhook signature:", signature)
     try:
         handler.handle(body, signature)
     except InvalidSignatureError:
+        print("❌ InvalidSignatureError: 署名が不正です")
         abort(400)
+    except Exception as e:
+        print("❌ 予期せぬエラー:", e)
+        abort(500)
     return 'OK'
 
 @handler.add(MessageEvent, message=TextMessage)
