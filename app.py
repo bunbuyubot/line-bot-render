@@ -16,7 +16,7 @@ from data_dict import data_dict
 
 app = Flask(__name__)
 
-LINE_CHANNEL_ACCESS_TOKEN =os.environ.get('JLHxkWqodOnZUYjdekyGfVPGecu8/QbV3v9b3/9v3QUVBt1e2VVa9iYEtjlZfyryyZ94VzBEFVjDVHhiifQybVHEgd/9G1YTyXNtpRYKYlS84prGTlQ9OEtjbYRQ0i+1Ew/LYVBKL/gOO8o28qXUNgdB04t89/1O/w1cDnyilFU=')
+LINE_CHANNEL_ACCESS_TOKEN =os.environ.get('GUCpCaA9bPQsVbxSkPSjyPc0DxH7ox+BaA4fUojdP06apBIAf5O2mwtVATINabH8kozsCDU2Zx0lLmWwEv0+k40F6f8MOtINrgsGRt0sok5kITNTe3C9BGFzUIQ7U+H4ldaPZt0jAuNLuYASzgdfQgdB04t89/1O/w1cDnyilFU=')
 LINE_CHANNEL_SECRET =os.environ.get('f7d5574370a219ba443cd857e6592383')
 
 line_bot_api = LineBotApi(LINE_CHANNEL_ACCESS_TOKEN)
